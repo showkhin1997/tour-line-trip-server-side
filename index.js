@@ -21,6 +21,7 @@ async function run() {
         const database = client.db("tour_line_trip");
         const servicesCollection = database.collection("services");
         const ordersCollection = database.collection("orders");
+        const confirmOrdersCollection = database.collection("confirmOrder");
 
         // GET API
         app.get('/services', async (req, res) => {
@@ -47,9 +48,33 @@ async function run() {
         // POST Orders Collection
         app.post('/orders', async (req, res) => {
             const orders = await ordersCollection.insertOne(req.body);
-            console.log(orders);
             res.json(orders);
-        })
+        });
+
+        // GET Orders Collection
+        app.get('/orders', async (req, res) => {
+            const cursor = ordersCollection.find({});
+            const orders = await cursor.toArray();
+            res.send(orders);
+        });
+
+        // POST Order collection with user
+        app.post('/confirmOrder', async (req, res) => {
+            const order = req.body;
+            const confrirmOrder = await confirmOrdersCollection.insertOne(order);
+            res.json(confrirmOrder);
+        });
+
+
+
+        // DELETE API
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await ordersCollection.deleteOne(query);
+            res.json(result);
+        });
+
     }
     finally {
         // await client.close();
