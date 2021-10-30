@@ -65,7 +65,41 @@ async function run() {
             res.json(confrirmOrder);
         });
 
+        // GET Order collection with user
+        app.get('/confirmOrder', async (req, res) => {
+            const cursor = confirmOrdersCollection.find({});
+            const confirmOrders = await cursor.toArray();
+            res.send(confirmOrders);
+        });
 
+        // UPDATE API
+        app.put('/services/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedService = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    name: updatedService.name,
+                    country: updatedService.country,
+                    description: updatedService.description,
+                    img: updatedService.img,
+                    price: updatedService.price,
+                    day: updatedService.day,
+                    address: updatedService.address,
+                },
+            };
+            const result = servicesCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+        });
+
+        // DELETE API services from dashboard
+        app.delete('/services/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await servicesCollection.deleteOne(query);
+            res.json(result);
+        });
 
         // DELETE API
         app.delete('/orders/:id', async (req, res) => {
