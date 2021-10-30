@@ -89,7 +89,7 @@ async function run() {
                     address: updatedService.address,
                 },
             };
-            const result = servicesCollection.updateOne(filter, updateDoc, options);
+            const result = await servicesCollection.updateOne(filter, updateDoc, options);
             res.json(result);
         });
 
